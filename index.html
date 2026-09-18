@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -48,6 +48,10 @@
       font-size: 17px;
     }
 
+    button:disabled {
+      opacity: 0.6;
+    }
+
     .tools {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -62,6 +66,16 @@
       text-align: center;
       border: 1px solid #ddd;
     }
+
+    #result {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      white-space: pre-wrap;
+      line-height: 1.5;
+    }
   </style>
 </head>
 
@@ -75,10 +89,12 @@
 
     <h2>What can I help with?</h2>
 
-    <textarea id="prompt"
-      placeholder="Apna question ya kaam yahan likho..."></textarea>
+    <textarea
+      id="prompt"
+      placeholder="Apna question ya kaam yahan likho..."
+    ></textarea>
 
-    <button onclick="askAI()">
+    <button id="askButton" onclick="askAI()">
       ✨ Ask AI
     </button>
 
@@ -91,24 +107,55 @@
       <div class="tool">💻 Coding</div>
     </div>
 
-    <div id="result"></div>
+    <div id="result">
+      AI ka response yahan aayega...
+    </div>
 
   </div>
 
   <script>
-    function askAI() {
-      const prompt = document.getElementById("prompt").value;
+    async function askAI() {
+      const prompt = document.getElementById("prompt").value.trim();
+      const result = document.getElementById("result");
+      const button = document.getElementById("askButton");
 
-      if (!prompt.trim()) {
-        document.getElementById("result").innerHTML =
-          "<p>Please enter something first.</p>";
+      if (!prompt) {
+        result.textContent = "Please pehle apna question likho.";
         return;
       }
 
-      document.getElementById("result").innerHTML =
-        "<p>🤖 AI response yahan aayega...</p>";
+      button.disabled = true;
+      button.textContent = "⏳ AI soch raha hai...";
+      result.textContent = "🤖 AI response generate ho raha hai...";
+
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            prompt: prompt
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "AI request failed");
+        }
+
+        result.textContent = data.answer || "AI ne koi response nahi diya.";
+
+      } catch (error) {
+        result.textContent =
+          "❌ Error: " + error.message;
+      }
+
+      button.disabled = false;
+      button.textContent = "✨ Ask AI";
     }
   </script>
 
 </body>
-</html>
+</html>  
