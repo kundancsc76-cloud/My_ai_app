@@ -1,0 +1,9 @@
+{
+  "name": "my-ai-app",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-18",
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS"
+  }
+}
