@@ -129,7 +129,7 @@
       result.textContent = "🤖 AI response generate ho raha hai...";
 
       try {
-        const response = await fetch("/api/chat", {
+        const response = await fetch("https://my-ai-app.kundancsc76.workers.dev/api/chat", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
